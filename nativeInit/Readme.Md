@@ -10,7 +10,7 @@ For updated information go to https://reactnative.dev/docs/environment-setup
   ### Install Cocoa Pods - IPHONE
   sudo gem install cocoapods
   ### Install JDK - ANDROID
-  brew cast install adoptopenjdk/openjdk/adoptopenjdk8
+  brew cask install adoptopenjdk/openjdk/adoptopenjdk8
   ### Install Android Studio
   https://developer.android.com/studio
   #### Make sure to install version 9.0 (Pie)
