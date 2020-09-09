@@ -9,3 +9,5 @@ nvm use node 12
 ## Install Expo
 npm install - g expo-cli
 
+expo init expoDemo
+
