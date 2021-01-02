@@ -20,7 +20,8 @@ const HighScore = ({history}) => {
 
   return (
     <SafeAreaView style={styles.notches}>
-      <Text style={styles.title}>Joey not Joey</Text>
+      <Text style={styles.gameOverTitle}>Joey not Joey</Text>
+      <Text style={styles.gameOverSecondaryTitle}>High Scores</Text>
       <View style={styles.hscontainer}>
         <View style={styles.hsheaderrow}>
           <View style={styles.hscell}>
@@ -57,11 +58,11 @@ const HighScore = ({history}) => {
       </View>
 
       <TouchableOpacity
-        style={styles.appButtonContainer}
+        style={styles.hsappButtonContainer}
         onPress={() => {
           history.push('/');
         }}>
-        <Text style={styles.hsappButtonText}>Back to Home</Text>
+        <Text style={styles.appButtonText}>Back to Home</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
