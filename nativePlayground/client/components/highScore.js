@@ -15,7 +15,6 @@ const HighScore = ({history}) => {
       .catch(err => {
         console.log(err);
       });
-    // setScores([{name: 'terrence', score: 12, time: 1235}]);
   }, []);
 
   return (

@@ -157,6 +157,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     margin: 10,
   },
+// multiplayer===================================
+  gameCodeText: {
+    fontSize: 20,
+    textAlign: 'center',
+  },
 });
 
 export default styles;

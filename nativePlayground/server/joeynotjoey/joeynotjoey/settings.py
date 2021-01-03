@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'joeynotjoey.wsgi.application'
+ASGI_APPLICATION = 'joeynotjoey.asgi.application'
+
+# mysite/settings.py
+# Channels
+ASGI_APPLICATION = 'joeynotjoey.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 
 # Database
@@ -109,3 +123,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
