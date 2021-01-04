@@ -37,6 +37,10 @@ class CreateRoom(APIView):
       newRoom.save()
     return Response(RoomViewSerializer(newRoom).data, status=status.HTTP_201_CREATED)
 
+class SpecificRoomView(APIView):
+  def get(self, request, code):
+    return Response(RoomViewSerializer(Games.objects.get(code=code)).data)
+
 class CheckRoom(APIView):
   def get_object(self, code):
     return Games.objects.get(code=code)

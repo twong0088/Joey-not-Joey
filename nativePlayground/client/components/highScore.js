@@ -37,7 +37,7 @@ const HighScore = ({history}) => {
           </View>
         </View>
         {scores.map((score, key) => (
-          <View style={styles.hsrow}>
+          <View style={styles.hsrow} key={key}>
             <View style={styles.hscell}>
               <Text style={styles.hstext}>{key + 1}</Text>
             </View>
