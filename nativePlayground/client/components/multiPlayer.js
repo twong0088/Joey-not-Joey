@@ -1,10 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Text, SafeAreaView, Image, TouchableOpacity, View} from 'react-native';
 import DialogInput from 'react-native-dialog-input';
 import MultiPlayerGame from './multiplayerGame.js';
 import styles from '../styles.js';
 const joeyImage = require('../../joeyImages/multiplayerLanding.jpg');
 const axios = require('axios');
+const victoryImage = require('../../joeyImages/win.jpg');
+const loserImage = require('../../joeyImages/lose.jpg');
+const tiedImage = require('../../joeyImages/tied.jpg');
 
 const MultiplayerLanding = ({history}) => {
   const [page, changePage] = useState('landing');
@@ -17,7 +20,15 @@ const MultiplayerLanding = ({history}) => {
   const [playerTwo, setPlayerTwo] = useState('anonymous');
   const [isPlayerOne, setIsPlayerOne] = useState(true);
   const [waitForP2, setWarning] = useState(false);
+  const [playerOneScore, setP1Score] = useState(0);
+  const [playerTwoScore, setP2Score] = useState(0);
 
+  const gameOver = scores => {
+    console.log(isPlayerOne, 'game over triggered');
+    setP1Score(scores.playerOneScore);
+    setP2Score(scores.playerTwoScore);
+    changePage('gameOver');
+  };
   if (page === 'landing') {
     return (
       <SafeAreaView style={styles.notches}>
@@ -129,6 +140,7 @@ const MultiplayerLanding = ({history}) => {
               .then(response => {
                 console.log(response.data);
                 if (response.data.playerTwo !== '') {
+                  setPlayerOne(response.data.playerOne);
                   setPlayerTwo(response.data.playerTwo);
                   changePage('game');
                 } else {
@@ -150,23 +162,89 @@ const MultiplayerLanding = ({history}) => {
         playerTwo={playerTwo}
         isPlayerOne={isPlayerOne}
         gameCode={gameCode}
-        changePage={changePage}
+        gameOver={gameOver}
       />
     );
   } else if (page === 'gameOver') {
-    return (
-      <SafeAreaView style={styles.notches}>
-        <Text style={styles.title}>Joey not Joey</Text>
-        <Image source={joeyImage} style={{flex: 5}} />
-        <TouchableOpacity
-          style={styles.appButtonContainer}
-          onPress={() => {
-            history.push('/');
-          }}>
-          <Text style={styles.appButtonText}>Back</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
+    if (playerOneScore === playerTwoScore) {
+      return (
+        <SafeAreaView style={styles.notches}>
+          <Text style={styles.gameOverTitle}>Joey not Joey </Text>
+          <Text style={styles.gameOverSecondaryTitle}>Game Tied!</Text>
+          <Image source={tiedImage} style={{width: 300, height: 300}} />
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 1: {playerOne}</Text>
+              <Text>{playerOneScore}</Text>
+            </View>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 2: {playerTwo}</Text>
+              <Text>{playerTwoScore}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.appButtonContainer}
+            onPress={() => {
+              history.push('/');
+            }}>
+            <Text style={styles.appButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      );
+    } else if (
+      (isPlayerOne && playerOneScore > playerTwoScore) ||
+      (!isPlayerOne && playerOneScore < playerTwoScore)
+    ) {
+      return (
+        <SafeAreaView style={styles.notches}>
+          <Text style={styles.gameOverTitle}>Joey not Joey </Text>
+          <Text style={styles.gameOverSecondaryTitle}>You Win!</Text>
+          <Image source={victoryImage} style={{width: 300, height: 300}} />
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 1: {playerOne}</Text>
+              <Text>{playerOneScore}</Text>
+            </View>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 2: {playerTwo}</Text>
+              <Text>{playerTwoScore}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.appButtonContainer}
+            onPress={() => {
+              history.push('/');
+            }}>
+            <Text style={styles.appButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      );
+    } else {
+      return (
+        <SafeAreaView style={styles.notches}>
+          <Text style={styles.gameOverTitle}>Joey not Joey </Text>
+          <Text style={styles.gameOverSecondaryTitle}>You Lose</Text>
+          <Image source={loserImage} style={{width: 300, height: 300}} />
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 1: {playerOne}</Text>
+              <Text>{playerOneScore}</Text>
+            </View>
+            <View style={{margin: 15, alignItems: 'center'}}>
+              <Text>Player 2: {playerTwo}</Text>
+              <Text>{playerTwoScore}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.appButtonContainer}
+            onPress={() => {
+              history.push('/');
+            }}>
+            <Text style={styles.appButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      );
+    }
   }
 };
 

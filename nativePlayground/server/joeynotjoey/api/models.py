@@ -24,3 +24,10 @@ class Games(models.Model):
   playerOne = models.CharField(max_length=20)
   playerTwo = models.CharField(max_length=20)
 
+class Game_records(models.Model):
+  gameId = models.CharField(max_length=20),
+  playerOneScore = models.IntegerField(null=False),
+  playerTwoScore = models.IntegerField(null=False),
+  playerOnesTurn = models.BooleanField
+  playerTwoCounter = models.IntegerField
+  timestamp = models.DateTimeField(auto_now_add=True)

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from .serializers import HighScoreSerializer, AddScoreSerializer, CheckRoomSerializer, CreateRoomSerializer, RoomViewSerializer
-from .models import HighScore, Games
+from .models import HighScore, Games, Game_records
 from rest_framework.response import Response
 from django.http import HttpResponse
 
@@ -60,22 +60,6 @@ class CheckRoom(APIView):
       return Response('patch failed', status=status.HTTP_400_BAD_REQUEST)
     return Response('patch failed',status=status.HTTP_400_BAD_REQUEST)
 
-# class DetailView(APIView):
-#     def get_object(self, pk):
-#         return TestModel.objects.get(pk=pk)
-
-#     def patch(self, request, pk):
-#         testmodel_object = self.get_object(pk)
-#         serializer = TestModelSerializer(testmodel_object, data=request.data, partial=True) # set partial=True to update a data partially
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(code=201, data=serializer.data)
-#         return JsonResponse(code=400, data="wrong parameters")
-
-def index(request):
-    return render(request, 'chat/index.html', {})
-
-def room(request, room_name):
-    return render(request, 'chat/room.html', {
-        'room_name': room_name
-    })
+# def get_latest_game_record(gameId):
+#   gameRecord = get_object_or_404(Game_records, gameId=gameId)
+#   return game.order_by('-timestamp').all()[:1]

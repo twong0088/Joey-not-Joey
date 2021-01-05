@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HighScoreView, AddScore, index, room, CheckRoom, CreateRoom, RoomView, SpecificRoomView
+from .views import HighScoreView, AddScore, CheckRoom, CreateRoom, RoomView, SpecificRoomView
 
 urlpatterns = [
     path('highscore', HighScoreView.as_view()),

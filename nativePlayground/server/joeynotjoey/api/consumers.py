@@ -1,8 +1,12 @@
 # chat/consumers.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+# from views import get_latest_game_record
 
 class GameConsumer(AsyncWebsocketConsumer):
+    # def fetch_game_records(self, data):
+    #     game_records = get_latest_game_record()
+
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
@@ -25,22 +29,37 @@ class GameConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        playerOneScore = text_data_json['playerOneScore']
+        playerTwoScore = text_data_json['playerTwoScore']
+        playerOnesTurn = text_data_json['playerOnesTurn']
+        playerTwoCounter = text_data_json['playerTwoCounter']
+
+
 
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'chat_message',
-                'message': message
+              'type': 'game_update',
+              'playerOneScore': playerOneScore,
+              'playerTwoScore': playerTwoScore,
+              'playerOnesTurn': playerOnesTurn,
+              'playerTwoCounter': playerTwoCounter,
             }
         )
 
     # Receive message from room group
-    async def chat_message(self, event):
-        message = event['message']
+    async def game_update(self, event):
+        playerOneScore = event['playerOneScore']
+        playerTwoScore = event['playerTwoScore']
+        playerOnesTurn = event['playerOnesTurn']
+        playerTwoCounter = event['playerTwoCounter']
+
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
-            'message': message
+            'playerOneScore': playerOneScore,
+            'playerTwoScore': playerTwoScore,
+            'playerOnesTurn': playerOnesTurn,
+            'playerTwoCounter': playerTwoCounter
         }))
