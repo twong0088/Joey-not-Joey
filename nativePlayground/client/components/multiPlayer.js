@@ -83,15 +83,33 @@ const MultiplayerLanding = ({history}) => {
           // textInputProps={{maxLength: 20}}
           submitText={'Join Room!'}
           submitInput={inputText => {
+            // axios
+            //   .patch(`http://127.0.0.1:8000/api/checkroom/${inputText + '/'}`, {
+            //     playerTwo: playerName,
+            //   })
+            //   .then(response => {
+            //     setGameCode(inputText);
+            //     setPlayerTwo(playerName);
+            //     setIsPlayerOne(false);
+            //     changePage('code');
+            //   })
+            //   .catch(err => {
+            //     console.log(err);
+            //     setInvalidCode(true);
+            //   });
             axios
-              .patch(`http://127.0.0.1:8000/api/checkroom/${inputText + '/'}`, {
-                playerTwo: playerName,
-              })
+              .get(`http://127.0.0.1:8000/api/listrooms/${inputText}/`)
               .then(response => {
-                setGameCode(inputText);
-                setPlayerTwo(playerName);
-                setIsPlayerOne(false);
-                changePage('code');
+                console.log(response.data);
+                if (response.data.playerTwo === '') {
+                  setGameCode(inputText);
+                  setPlayerOne(response.data.playerOne);
+                  setPlayerTwo(playerName);
+                  setIsPlayerOne(false);
+                  changePage('code');
+                } else {
+                  setInvalidCode(true);
+                }
               })
               .catch(err => {
                 console.log(err);
@@ -135,21 +153,35 @@ const MultiplayerLanding = ({history}) => {
         <TouchableOpacity
           style={styles.appButtonContainer}
           onPress={() => {
-            axios
-              .get(`http://127.0.0.1:8000/api/listrooms/${gameCode}/`)
-              .then(response => {
-                console.log(response.data);
-                if (response.data.playerTwo !== '') {
-                  setPlayerOne(response.data.playerOne);
-                  setPlayerTwo(response.data.playerTwo);
+            if (isPlayerOne) {
+              axios
+                .get(`http://127.0.0.1:8000/api/listrooms/${gameCode}/`)
+                .then(response => {
+                  console.log(response.data);
+                  if (response.data.playerTwo !== '') {
+                    setPlayerOne(response.data.playerOne);
+                    setPlayerTwo(response.data.playerTwo);
+                    changePage('game');
+                  } else {
+                    setWarning(true);
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            } else {
+              axios
+                .patch(`http://127.0.0.1:8000/api/checkroom/${gameCode}/`, {
+                  playerTwo: playerTwo,
+                })
+                .then(response => {
                   changePage('game');
-                } else {
-                  setWarning(true);
-                }
-              })
-              .catch(err => {
-                console.log(err);
-              });
+                })
+                .catch(err => {
+                  console.log(err);
+                  setInvalidCode(true);
+                });
+            }
           }}>
           <Text style={styles.appButtonText}>Start Game!</Text>
         </TouchableOpacity>

@@ -30,7 +30,7 @@ class MultiPlayerGame extends React.Component {
       playerTwoScore: 0,
       received: {},
       counter: 1,
-      question: 1,
+      // question: 1,
       randomIndex: 0,
       photo: {},
       timer: 0,
@@ -84,108 +84,161 @@ class MultiPlayerGame extends React.Component {
 
     this.chatSocket.onmessage = e => {
       var receivedData = JSON.parse(e.data);
-
-      this.setState(
-        {
+      console.log('counter from chatsocket: ', this.state.counter);
+      if (
+        this.state.counter === 1 ||
+        (!receivedData.playerOnesTurn && this.state.isPlayerOne) ||
+        (receivedData.playerOnesTurn && !this.state.isPlayerOne)
+      ) {
+        this.setState({
           playerOneScore: receivedData.playerOneScore,
           playerTwoScore: receivedData.playerTwoScore,
           playerOnesTurn: receivedData.playerOnesTurn,
           playerTwoCounter: receivedData.playerTwoCounter,
-        },
-        () => {
-          console.log(this.state.playerTwoCounter);
-          if (this.state.playerTwoCounter >= 20) {
-            this.props.gameOver({
-              playerOneScore: this.state.playerOneScore,
-              playerTwoScore: this.state.playerTwoScore,
-            });
-          }
-        },
-      );
+        });
+      } else {
+        this.setState(
+          {
+            playerOneScore: receivedData.playerOneScore,
+            playerTwoScore: receivedData.playerTwoScore,
+            playerOnesTurn: receivedData.playerOnesTurn,
+            playerTwoCounter: receivedData.playerTwoCounter,
+            counter: this.state.counter + 1,
+            randomIndex: Math.floor(Math.random() * 4),
+          },
+          () => {
+            if (!this.state.isPlayerOne) {
+              this.setState({
+                playerTwoCounter: this.state.playerTwoCounter + 1,
+              });
+            }
+            // console.log(this.state.playerTwoCounter);
+            if (this.state.playerTwoCounter === 20) {
+              this.props.gameOver({
+                playerOneScore: this.state.playerOneScore,
+                playerTwoScore: this.state.playerTwoScore,
+              });
+            }
+          },
+        );
+      }
     };
 
     this.chatSocket.onclose = e => {
       console.error('Chat socket closed unexpectedly');
     };
-
-    //   document.querySelector('#changeTurns').onclick = e => {
-    //     chatSocket.send(
-    //       JSON.stringify({
-    //         playerOneScore: this.state.playerOneScore,
-    //         playerTwoScore: this.state.playerTwoScore,
-    //         playerOnesTurn: !this.state.playerOnesTurn,
-    //       }),
-    //     );
-    //   };
-    // }
   }
   selectAnswer(correct) {
     if (correct && this.state.isPlayerOne) {
-      this.setState({
-        playerOneScore: this.state.playerOneScore + 1,
-      });
+      this.setState(
+        {
+          playerOneScore: this.state.playerOneScore + 1,
+        },
+        () => {
+          this.nextQuestion();
+        },
+      );
     } else if (correct && !this.state.isPlayerOne) {
-      this.setState({
-        playerTwoScore: this.state.playerTwoScore + 1,
-      });
+      this.setState(
+        {
+          playerTwoScore: this.state.playerTwoScore + 1,
+        },
+        () => {
+          this.nextQuestion();
+        },
+      );
+    } else {
+      this.nextQuestion();
     }
-    this.nextQuestion();
+    // this.nextQuestion;
   }
 
   nextQuestion() {
     // write a send for every 5 questions
-    this.setState(
-      {
-        counter: this.state.counter + 1,
-        question: this.state.question + 1,
-        randomIndex: Math.floor(Math.random() * 4),
-        timer: this.state.timer + 1,
-      },
-      () => {
-        if (!this.state.isPlayerOne) {
-          this.setState(
-            {
-              playerTwoCounter: this.state.playerTwoCounter + 1,
-            },
-            () => {
-              if ((this.state.counter - 1) % 5 === 0) {
-                // this.setState({
-                //   pause: true,
-                // });
-                this.chatSocket.send(
-                  JSON.stringify({
-                    playerOneScore: this.state.playerOneScore,
-                    playerTwoScore: this.state.playerTwoScore,
-                    playerOnesTurn: !this.state.playerOnesTurn,
-                    playerTwoCounter: this.state.playerTwoCounter,
-                  }),
-                );
-              }
-              // if (this.state.playerTwoCounter >= 20) {
-              //   this.props.gameOver({
-              //     playerOneScore: this.state.playerOneScore,
-              //     playerTwoScore: this.state.playerTwoScore,
-              //   });
-              // }
-            },
-          );
-        } else {
-          if ((this.state.counter - 1) % 5 === 0) {
-            // this.setState({
-            //   pause: true,
-            // });
-            this.chatSocket.send(
-              JSON.stringify({
+    if (this.state.counter % 5 === 0) {
+      // console.log(this.state.counter);
+      this.chatSocket.send(
+        JSON.stringify({
+          playerOneScore: this.state.playerOneScore,
+          playerTwoScore: this.state.playerTwoScore,
+          playerOnesTurn: !this.state.playerOnesTurn,
+          playerTwoCounter: this.state.playerTwoCounter,
+        }),
+      );
+    } else {
+      if (this.state.isPlayerOne) {
+        this.setState({
+          counter: this.state.counter + 1,
+          randomIndex: Math.floor(Math.random() * 4),
+          timer: this.state.timer + 1,
+        });
+      } else {
+        this.setState(
+          {
+            counter: this.state.counter + 1,
+            randomIndex: Math.floor(Math.random() * 4),
+            timer: this.state.timer + 1,
+            playerTwoCounter: this.state.playerTwoCounter + 1,
+          },
+          () => {
+            if (this.state.playerTwoCounter === 20) {
+              this.chatSocket.send(
+                JSON.stringify({
+                  playerOneScore: this.state.playerOneScore,
+                  playerTwoScore: this.state.playerTwoScore,
+                  playerOnesTurn: !this.state.playerOnesTurn,
+                  playerTwoCounter: this.state.playerTwoCounter,
+                }),
+              );
+              this.props.gameOver({
                 playerOneScore: this.state.playerOneScore,
                 playerTwoScore: this.state.playerTwoScore,
-                playerOnesTurn: !this.state.playerOnesTurn,
-                playerTwoCounter: this.state.playerTwoCounter,
-              }),
-            );
-          }
-        }
-      },
-    );
+              });
+            }
+          },
+        );
+      }
+    }
+    // this.setState(
+    //   {
+    //     counter: this.state.counter + 1,
+    //     question: this.state.question + 1,
+    //     randomIndex: Math.floor(Math.random() * 4),
+    //     timer: this.state.timer + 1,
+    //   },
+    //   () => {
+    //     if (!this.state.isPlayerOne) {
+    //       this.setState(
+    //         {
+    //           playerTwoCounter: this.state.playerTwoCounter + 1,
+    //         },
+    //         () => {
+    //           if (this.state.counter % 5 === 0) {
+    //             this.chatSocket.send(
+    //               JSON.stringify({
+    //                 playerOneScore: this.state.playerOneScore,
+    //                 playerTwoScore: this.state.playerTwoScore,
+    //                 playerOnesTurn: !this.state.playerOnesTurn,
+    //                 playerTwoCounter: this.state.playerTwoCounter,
+    //               }),
+    //             );
+    //           }
+    //         },
+    //       );
+    //     } else {
+    //       if (this.state.counter % 5 === 0) {
+    //         this.chatSocket.send(
+    //           JSON.stringify({
+    //             playerOneScore: this.state.playerOneScore,
+    //             playerTwoScore: this.state.playerTwoScore,
+    //             playerOnesTurn: !this.state.playerOnesTurn,
+    //             playerTwoCounter: this.state.playerTwoCounter,
+    //           }),
+    //         );
+    //       }
+    //     }
+    //   },
+    // );
   }
   render() {
     if (
@@ -217,7 +270,7 @@ class MultiPlayerGame extends React.Component {
             button={styles.buttonStyle}
             buttonIcon={styles.buttonImageIconStyle}
             greyedOut={styles.greyedOut}
-            images={data[this.state.question - 1]}
+            images={data[this.state.counter - 1]}
             randomIndex={this.state.randomIndex}
             selectAnswer={this.selectAnswer}
             omitHalf={this.state.disableHalf}
