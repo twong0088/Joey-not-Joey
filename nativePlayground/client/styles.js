@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   gameCodeText: {
     fontSize: 20,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 

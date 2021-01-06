@@ -24,7 +24,6 @@ const MultiplayerLanding = ({history}) => {
   const [playerTwoScore, setP2Score] = useState(0);
 
   const gameOver = scores => {
-    console.log(isPlayerOne, 'game over triggered');
     setP1Score(scores.playerOneScore);
     setP2Score(scores.playerTwoScore);
     changePage('gameOver');
@@ -83,24 +82,9 @@ const MultiplayerLanding = ({history}) => {
           // textInputProps={{maxLength: 20}}
           submitText={'Join Room!'}
           submitInput={inputText => {
-            // axios
-            //   .patch(`http://127.0.0.1:8000/api/checkroom/${inputText + '/'}`, {
-            //     playerTwo: playerName,
-            //   })
-            //   .then(response => {
-            //     setGameCode(inputText);
-            //     setPlayerTwo(playerName);
-            //     setIsPlayerOne(false);
-            //     changePage('code');
-            //   })
-            //   .catch(err => {
-            //     console.log(err);
-            //     setInvalidCode(true);
-            //   });
             axios
               .get(`http://127.0.0.1:8000/api/listrooms/${inputText}/`)
               .then(response => {
-                console.log(response.data);
                 if (response.data.playerTwo === '') {
                   setGameCode(inputText);
                   setPlayerOne(response.data.playerOne);
@@ -125,7 +109,6 @@ const MultiplayerLanding = ({history}) => {
           title={'Enter Name'}
           message={'Please Enter Your Name'}
           hintInput={'20 Characters Max'}
-          // textInputProps={{maxLength: 20}}
           submitInput={inputText => {
             setPlayerName(inputText);
             showNameDialog(false);
@@ -157,7 +140,6 @@ const MultiplayerLanding = ({history}) => {
               axios
                 .get(`http://127.0.0.1:8000/api/listrooms/${gameCode}/`)
                 .then(response => {
-                  console.log(response.data);
                   if (response.data.playerTwo !== '') {
                     setPlayerOne(response.data.playerOne);
                     setPlayerTwo(response.data.playerTwo);
@@ -203,15 +185,15 @@ const MultiplayerLanding = ({history}) => {
         <SafeAreaView style={styles.notches}>
           <Text style={styles.gameOverTitle}>Joey not Joey </Text>
           <Text style={styles.gameOverSecondaryTitle}>Game Tied!</Text>
-          <Image source={tiedImage} style={{width: 300, height: 300}} />
+          <Image source={tiedImage} />
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 1: {playerOne}</Text>
-              <Text>{playerOneScore}</Text>
+              <Text style={styles.gameCodeText}>Player 1: {playerOne}</Text>
+              <Text style={styles.gameCodeText}>{playerOneScore}</Text>
             </View>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 2: {playerTwo}</Text>
-              <Text>{playerTwoScore}</Text>
+              <Text style={styles.gameCodeText}>Player 2: {playerTwo}</Text>
+              <Text style={styles.gameCodeText}>{playerTwoScore}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -231,15 +213,15 @@ const MultiplayerLanding = ({history}) => {
         <SafeAreaView style={styles.notches}>
           <Text style={styles.gameOverTitle}>Joey not Joey </Text>
           <Text style={styles.gameOverSecondaryTitle}>You Win!</Text>
-          <Image source={victoryImage} style={{width: 300, height: 300}} />
+          <Image source={victoryImage} />
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 1: {playerOne}</Text>
-              <Text>{playerOneScore}</Text>
+              <Text style={styles.gameCodeText}>Player 1: {playerOne}</Text>
+              <Text style={styles.gameCodeText}>{playerOneScore}</Text>
             </View>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 2: {playerTwo}</Text>
-              <Text>{playerTwoScore}</Text>
+              <Text style={styles.gameCodeText}>Player 2: {playerTwo}</Text>
+              <Text style={styles.gameCodeText}>{playerTwoScore}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -256,15 +238,15 @@ const MultiplayerLanding = ({history}) => {
         <SafeAreaView style={styles.notches}>
           <Text style={styles.gameOverTitle}>Joey not Joey </Text>
           <Text style={styles.gameOverSecondaryTitle}>You Lose</Text>
-          <Image source={loserImage} style={{width: 300, height: 300}} />
+          <Image source={loserImage} />
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 1: {playerOne}</Text>
-              <Text>{playerOneScore}</Text>
+              <Text style={styles.gameCodeText}>Player 1: {playerOne}</Text>
+              <Text style={styles.gameCodeText}>{playerOneScore}</Text>
             </View>
             <View style={{margin: 15, alignItems: 'center'}}>
-              <Text>Player 2: {playerTwo}</Text>
-              <Text>{playerTwoScore}</Text>
+              <Text style={styles.gameCodeText}>Player 2: {playerTwo}</Text>
+              <Text style={styles.gameCodeText}>{playerTwoScore}</Text>
             </View>
           </View>
           <TouchableOpacity
